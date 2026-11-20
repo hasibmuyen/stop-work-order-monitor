@@ -1,0 +1,81 @@
+# Non-secret configuration for the Stop Work Order monitor.
+# Every key is documented below. Passwords and other secrets are NOT stored
+# here. Set them in the environment (see .env.example). Environment variables
+# override the values in this file.
+
+# poll_interval_minutes: How often the register is polled, in minutes.
+# Used only when the process is left running. Ignored by --once.
+poll_interval_minutes: 60
+
+# register_search_url: Elasticsearch endpoint used by the public register page.
+# The monitor posts the same style of query the page uses.
+register_search_url: https://www.nsw.gov.au/api/v1/elasticsearch/prod_content/_search
+
+# register_base_url: Origin used to resolve order-page and PDF links.
+register_base_url: https://www.nsw.gov.au
+
+# agency_name: Agency filter applied to the register search.
+agency_name: Building Commission NSW
+
+# order_category: Register category that identifies a Stop Work Order.
+order_category: Stop work orders
+
+# page_size: Search results requested per page. The public API accepts up to 100.
+page_size: 50
+
+# max_results: Safety cap on the number of search hits processed in one poll.
+max_results: 500
+
+# request_timeout_seconds: Timeout for each register or PDF HTTP request.
+request_timeout_seconds: 60
+
+# request_delay_seconds: Pause between order-detail requests, to avoid bursting.
+request_delay_seconds: 0.5
+
+# max_pdf_bytes: PDFs larger than this are skipped and retried on a later poll.
+max_pdf_bytes: 10485760
+
+# user_agent: Sent with every request so the monitor can be identified.
+user_agent: Mozilla/5.0 (compatible; stop-work-order-monitor/1.0; +https://www.nsw.gov.au/departments-and-agencies/building-commission/register-of-building-work-orders)
+
+# timezone: Time zone used to convert register timestamps into calendar dates.
+timezone: Australia/Sydney
+
+# sqlserver: Connection settings for the local SQL Server instance.
+# The password is not stored here. Set SQLSERVER_PASSWORD in .env.
+# That value is placed in the ODBC connection string as PWD=.
+sqlserver:
+  # driver: Installed ODBC driver name.
+  driver: ODBC Driver 18 for SQL Server
+  # host: LocalDB instance. Do not add a port; LocalDB is not listening on 1433.
+  host: '(localdb)\MSSQLLocalDB'
+  # port: TCP port, used only when host is a machine name rather than (localdb).
+  port: 1433
+  # database: Created on startup when it does not exist, then the tables are created.
+  database: StopWorkOrders
+  # encrypt: Matches Encrypt=True in the supplied connection string.
+  encrypt: true
+  # trust_server_certificate: Matches TrustServerCertificate=False.
+  trust_server_certificate: false
+
+# smtp: Notification settings. A message is sent only when a new order is stored.
+# password is read from SMTP_PASSWORD and must not be added here.
+smtp:
+  # enabled: When false, new orders are stored and notification_sent stays false
+  # so they can be sent after email is enabled.
+  enabled: false
+  # host: SMTP server hostname.
+  host: smtp.example.com
+  # port: 587 for STARTTLS, 465 for implicit TLS.
+  port: 587
+  # username: SMTP login. Leave empty for an unauthenticated relay.
+  username: ""
+  # use_tls: Upgrade the connection with STARTTLS after connect.
+  use_tls: true
+  # use_ssl: Connect with implicit TLS. Do not enable this together with use_tls.
+  use_ssl: false
+  # from_address: Envelope and header sender.
+  from_address: alerts@example.com
+  # to_addresses: Recipients of each new-order notification.
+  to_addresses:
+    - compliance@example.com
