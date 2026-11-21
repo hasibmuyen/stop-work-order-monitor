@@ -4,11 +4,9 @@ This application polls the [NSW Register of building work orders](https://www.ns
 
 A company is stored once. A builder licence number identifies it when the PDF prints one. Otherwise the Australian Company Number (ACN) identifies it. `company_number_type` records which of those numbers is being used: `licence`, `acn`, or `unstated`. The same company can have a separate Stop Work Order for each site address. An order is not stored again when that company number and site address have already been recorded.
 
-`companies.liquidation_list_added_on` is the publication date of the earliest Stop Work Order recorded for that company.
-
 ## Main Python libraries used
 httpx - for making html requests and receiving response
-bs4 - for parsing html
+beautifulsoup4 - for parsing html
 pypdf - read pdf
 sqlalchemy - ORM
 smtplib - sending email
