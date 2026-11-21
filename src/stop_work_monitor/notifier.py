@@ -22,12 +22,12 @@ class EmailNotifier:
         message = EmailMessage()
         added = order.order_added_on.isoformat()
         number = order.company_number or "Not stated on the order"
+        company_number_type_label = "ACN" if order.company_number_type == "acn" else "License No."
         lines = [
             "A new Stop Work Order has been recorded.",
             "",
             f"Company name: {order.company_name}",
-            f"Company number: {number}",
-            f"Company number type: {order.company_number_type}",
+            f"{company_number_type_label}: {number}",            
             f"Date added: {added}",
         ]
         lines.extend(
