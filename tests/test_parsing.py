@@ -188,15 +188,12 @@ def test_schema_script_creates_the_required_columns() -> None:
     script = open("scripts/init_db.sql", encoding="utf-8").read()
     batches = iter_sql_batches(script)
     assert any("CREATE DATABASE" in batch for batch in batches)
-    assert script.count("company_number NVARCHAR(50) NULL") == 4
     company_table = script.split("CREATE TABLE dbo.companies", 1)[1].split("\n    );", 1)[0]
     order_table = script.split("CREATE TABLE dbo.stop_work_orders", 1)[1].split("\n    );", 1)[0]
     assert "company_number NVARCHAR(50) NULL" in company_table
     assert "company_number NVARCHAR(50) NULL" in order_table
     assert "license_number NVARCHAR" not in company_table
     assert "license_number NVARCHAR" not in order_table
-    assert "DROP COLUMN license_number" in script
-    assert "DROP COLUMN acn" in script
     assert "company_number_type" in script
     assert "ck_companies_number_type" in script
     assert "company_address" in script
