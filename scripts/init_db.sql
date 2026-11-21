@@ -1,7 +1,7 @@
 -- Schema for the Stop Work Order monitor.
 --
 -- Manual setup against the default database name:
---   sqlcmd -S localhost,1433 -U sa -P "<SQLSERVER_PASSWORD>" -C -i scripts/init_db.sql
+--   sqlcmd -S <host> -U "<SQLSERVER_USER>" -P "<SQLSERVER_PASSWORD>" -C -i scripts/init_db.sql
 --
 -- The application also runs the table batches in this file on startup.
 -- It creates sqlserver.database from config/settings.yaml first, then skips

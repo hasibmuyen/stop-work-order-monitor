@@ -8,10 +8,10 @@ from stop_work_monitor.notifier import EmailNotifier
 def test_notification_uses_singular_order_category(monkeypatch) -> None:
     settings = SmtpSettings(
         enabled=True,
-        host="smtp.example.test",
+        host="smtp.example.com",
         port=587,
-        from_address="sender@example.test",
-        to_addresses=["recipient@example.test"],
+        from_address="sender@example.com",
+        to_addresses=["recipient@example.com"],
     )
     notifier = EmailNotifier(settings, "Stop work orders")
     messages = []

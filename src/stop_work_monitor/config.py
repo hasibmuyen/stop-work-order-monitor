@@ -7,7 +7,7 @@ from pathlib import Path
 
 import yaml
 from dotenv import load_dotenv
-from pydantic import BaseModel, Field, SecretStr, field_validator, model_validator
+from pydantic import BaseModel, EmailStr, Field, SecretStr, field_validator, model_validator
 
 
 class SqlServerSettings(BaseModel):
@@ -26,16 +26,18 @@ class SmtpSettings(BaseModel):
     host: str
     port: int = Field(ge=1, le=65535)
     username: str = ""
-    use_tls: bool = True
+    use_tls: bool = False
     use_ssl: bool = False
-    from_address: str
-    to_addresses: list[str]
+    from_address: EmailStr
+    to_addresses: list[EmailStr]
     password: SecretStr = SecretStr("")
 
-    @field_validator("to_addresses")
+    @field_validator("to_addresses", mode="before")
     @classmethod
     def strip_addresses(cls, value: list[str]) -> list[str]:
-        return [item.strip() for item in value if item.strip()]
+        if isinstance(value, list):
+            return [item.strip() if isinstance(item, str) else item for item in value]
+        return value
 
     @model_validator(mode="after")
     def check_transport(self) -> SmtpSettings:
