@@ -13,18 +13,20 @@ logger = logging.getLogger(__name__)
 
 
 class EmailNotifier:
-    def __init__(self, settings: SmtpSettings) -> None:
+    def __init__(self, settings: SmtpSettings, order_category: str) -> None:
         self._settings = settings
+        self._order_category = order_category.removesuffix("s")
 
     def send(self, order: StoredOrder) -> None:
         if not self._settings.enabled:
             raise RuntimeError("Email is disabled")
         message = EmailMessage()
+        order_type = self._order_category
         added = order.order_added_on.isoformat()
         number = order.company_number or "Not stated on the order"
         company_number_type_label = "ACN" if order.company_number_type == "acn" else "License No."
         lines = [
-            "A new Stop Work Order has been recorded.",
+            f"A new {order_type} has been recorded.",
             "",
             f"Company name: {order.company_name}",
             f"{company_number_type_label}: {number}",            
@@ -36,12 +38,12 @@ class EmailNotifier:
                 f"Register page: {order.source_url}",
             ]
         )
-        message["Subject"] = f"New Stop Work Order: {order.company_name}"
+        message["Subject"] = f"New {order_type}: {order.company_name}"
         message["From"] = self._settings.from_address
         message["To"] = ", ".join(self._settings.to_addresses)
         message.set_content("\n".join(lines))
         self._deliver(message)
-        logger.info("Sent Stop Work Order notification for %s", order.company_name)
+        logger.info(f"Sent {order_type} notification for {order.company_name}")
 
     def _deliver(self, message: EmailMessage) -> None:
         settings = self._settings

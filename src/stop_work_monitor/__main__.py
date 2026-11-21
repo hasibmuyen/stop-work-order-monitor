@@ -30,7 +30,11 @@ def main(argv: list[str] | None = None) -> int:
     settings = load_settings(args.settings)
     engine = create_app_engine(settings)
     apply_schema(engine)
-    monitor = Monitor(settings, OrderRepository(engine), EmailNotifier(settings.smtp))
+    monitor = Monitor(
+        settings,
+        OrderRepository(engine),
+        EmailNotifier(settings.smtp, settings.order_category),
+    )
     if args.once:
         monitor.poll()
         engine.dispose()
