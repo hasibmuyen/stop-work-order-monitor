@@ -63,15 +63,13 @@ sqlserver:
 smtp:
   # enabled: When false, new orders are stored and notification_sent stays false
   # so they can be sent after email is enabled.
-  enabled: false
+  enabled: true
   # host: SMTP server hostname.
-  host: smtp.example.com
-  # port: 587 for STARTTLS, 465 for implicit TLS.
-  port: 587
+  host: localhost
+  # port: 1025
+  port: 1025
   # username: SMTP login. Leave empty for an unauthenticated relay.
   username: ""
-  # use_tls: Upgrade the connection with STARTTLS after connect.
-  use_tls: true
   # use_ssl: Connect with implicit TLS. Do not enable this together with use_tls.
   use_ssl: false
   # from_address: Envelope and header sender.

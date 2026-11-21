@@ -50,10 +50,7 @@ class EmailNotifier:
         else:
             server = smtplib.SMTP(settings.host, settings.port, timeout=30)
         try:
-            server.ehlo()
-            if settings.use_tls:
-                server.starttls()
-                server.ehlo()
+            server.ehlo()            
             password = settings.password.get_secret_value()
             if settings.username:
                 server.login(settings.username, password)
