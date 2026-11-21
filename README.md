@@ -4,6 +4,10 @@ This application polls the [NSW Register of building work orders](https://www.ns
 
 A company is stored once. A builder licence number identifies it when the PDF prints one. Otherwise the Australian Company Number (ACN) identifies it. `company_number_type` records which of those numbers is being used: `licence`, `acn`, or `unstated`. The same company can have a separate Stop Work Order for each site address. An order is not stored again when that company number and site address have already been recorded.
 
+## Prerequisites
+
+Install Python 3.11 or newer and [ODBC Driver 18 for SQL Server](https://learn.microsoft.com/sql/connect/odbc/download-odbc-driver-for-sql-server).
+
 ## Configuration
 
 Non-secret settings, with a comment on every key, are in [config/settings.yaml](config/settings.yaml).
@@ -30,9 +34,29 @@ sqlcmd -S "<host>" -U "<SQLSERVER_USER>" -P "<SQLSERVER_PASSWORD>" -C -i scripts
 
 If you change `sqlserver.database`, edit the `CREATE DATABASE` and `USE` batches before running the script by hand. The application creates the database named in configuration and then applies the table batches.
 
-## Run
+## Setting up dummy smtp server for testing
+Mailpit is used to run dummy smtp server.
+Use the following command to install mailpit in windows powershell:
+```
+winget install -e --id axllent.mailpit
+```
 
-Install Python 3.11 or newer and [ODBC Driver 18 for SQL Server](https://learn.microsoft.com/sql/connect/odbc/download-odbc-driver-for-sql-server).
+For linux please use the following command:
+```
+sudo sh < <(curl -sL https://raw.githubusercontent.com/axllent/mailpit/develop/install.sh)
+```
+
+To run the mail server run in commad prompt
+```
+mailpit
+```
+
+The emails sent can be seen in the following url
+```
+http://localhost:8025
+```
+
+## Run
 
 ```text
 python -m pip install -r requirements.txt
@@ -51,23 +75,6 @@ Omit `--once` to keep polling every `poll_interval_minutes`.
 
 ```text
 python -m pip install --no-index --find-links=wheels -r requirements.txt
-```
-
-## Setting up local smtp server for testing
-Mailpit is used to run local smtp server.
-Use the following command to install mailpit in windows powershell:
-```
-winget install -e --id axllent.mailpit
-```
-
-To run the mail server run in powershell
-```
-mailpit
-```
-
-The emails sent can be seen in the following url
-```
-http://localhost:8025
 ```
 
 ## Tests
