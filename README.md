@@ -89,7 +89,7 @@ Output stored in `companies` table after a run.
 ![alt text](image-2.png)
 
 Records in `stop_work_orders` table
-![alt text](image-1.png)
+![alt text](image-3.png)
 
 Sample email output
 ![alt text](image.png)
