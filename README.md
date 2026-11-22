@@ -22,15 +22,16 @@ Optional environment overrides are listed in `.env.example`. They replace the ma
 
 ## Database
 
-The application connects to `<host>` as `SQLSERVER_USER`, with `SQLSERVER_PASSWORD` from `.env` inserted into the connection string.  
-The server name is configurable in `settings.yaml` under `host`.  
+The application connects to `<sqlserver.host>` as `SQLSERVER_USER`, with `SQLSERVER_PASSWORD` from `.env` inserted into the connection string.  
+The server name is configurable in `settings.yaml` under `sqlserver.host`.  
 On startup it creates `StopWorkOrders` if that database does not exist, then creates `dbo.companies` and `dbo.stop_work_orders` if those tables do not exist.  
 
 [scripts/init_db.sql](scripts/init_db.sql) is the schema source. A manual run is only needed when you want to prepare the database yourself:
 
 ```text
-sqlcmd -S "<host>" -U "<SQLSERVER_USER>" -P "<SQLSERVER_PASSWORD>" -C -i scripts/init_db.sql
+sqlcmd -S "<sqlserver.host>","<sqlserver.port>" -U "<SQLSERVER_USER>" -P "<SQLSERVER_PASSWORD>" -C -i scripts/init_db.sql
 ```
+If connecting to a localdb then remove port from above.
 
 If you change `sqlserver.database`, edit the `CREATE DATABASE` and `USE` batches before running the script by hand. The application creates the database named in configuration and then applies the table batches.
 
@@ -65,8 +66,6 @@ copy .env.example .env
 python -m stop_work_monitor --once
 ```
 
-`pip install -e .` puts the `src` package on Python's import path. Without that step, `python -m stop_work_monitor` reports `No module named stop_work_monitor`.
-
 Omit `--once` to keep polling every `poll_interval_minutes`.
 
 ## Deployment package
@@ -83,3 +82,14 @@ python -m pip install --no-index --find-links=wheels -r requirements.txt
 python -m pip install -r requirements-dev.txt
 python -m pytest
 ```
+
+## Sample output
+
+Output stored in `companies` table after a run.
+![alt text](image-2.png)
+
+Records in `stop_work_orders` table
+![alt text](image-1.png)
+
+Sample email output
+![alt text](image.png)
