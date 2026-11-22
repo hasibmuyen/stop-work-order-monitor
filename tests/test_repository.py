@@ -40,7 +40,6 @@ def _order(
         site_address=site_address,
         order_title=f"Stop Work Order for {company_name}",
         source_url=source_url,
-        source_nid=None,
         pdf_url=f"{source_url}.pdf",
         order_added_on=order_added_on,
         company_key=company_key(company_number, company_number_type, company_name),

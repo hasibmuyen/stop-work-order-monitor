@@ -96,7 +96,6 @@ class RegisterClient:
                 "summary",
                 "html_content",
                 "resource_date",
-                "nid",
                 "name_category",
             ],
             "query": {

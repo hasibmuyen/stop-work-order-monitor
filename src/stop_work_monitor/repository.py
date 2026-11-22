@@ -52,7 +52,6 @@ class StopWorkOrderRow(Base):
     source_url_hash: Mapped[str] = mapped_column(String(64))
     dedup_key: Mapped[str] = mapped_column(String(64))
     site_key: Mapped[str] = mapped_column(String(64))
-    source_nid: Mapped[int | None] = mapped_column(Integer)
     pdf_url: Mapped[str | None] = mapped_column(String(1000))
     order_added_on: Mapped[date] = mapped_column(Date)
     notification_sent: Mapped[bool] = mapped_column(Boolean)
@@ -96,7 +95,6 @@ class OrderRepository:
                 source_url_hash=order.source_url_hash,
                 dedup_key=order.dedup_key,
                 site_key=order.site_key,
-                source_nid=order.source_nid,
                 pdf_url=_clip(order.pdf_url, 1000),
                 order_added_on=order.order_added_on,
                 notification_sent=False,

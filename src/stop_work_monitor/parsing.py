@@ -62,7 +62,6 @@ def parse_listing_hit(source: dict[str, object]) -> ListingHit:
         summary=html.unescape(first_text(source.get("summary"))),
         html_content=first_text(source.get("html_content")),
         resource_timestamp=first_int(source.get("resource_date")),
-        source_nid=first_int(source.get("nid")),
     )
 
 
@@ -217,7 +216,6 @@ def build_parsed_order(fetched: FetchedOrder) -> ParsedOrder:
         site_address=site_address,
         order_title=fetched.hit.title,
         source_url=fetched.source_url,
-        source_nid=fetched.hit.source_nid,
         pdf_url=fetched.pdf_url,
         order_added_on=fetched.order_added_on,
         company_key=company_key(company_number, number_type, company_name),

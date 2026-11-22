@@ -15,7 +15,6 @@ class ListingHit:
     summary: str
     html_content: str
     resource_timestamp: int | None
-    source_nid: int | None
 
 
 @dataclass(frozen=True)
@@ -40,7 +39,6 @@ class ParsedOrder:
     site_address: str
     order_title: str
     source_url: str
-    source_nid: int | None
     pdf_url: str | None
     order_added_on: date
     company_key: str

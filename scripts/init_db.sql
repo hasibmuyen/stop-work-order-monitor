@@ -63,7 +63,6 @@ BEGIN
         dedup_key CHAR(64) NOT NULL,
         -- SHA-256 of company name|normalised site address. Collapses a later notice for the same site.
         site_key CHAR(64) NOT NULL,
-        source_nid INT NULL,
         pdf_url NVARCHAR(1000) NULL,
         -- Date the order was added to the public register.
         order_added_on DATE NOT NULL,
@@ -91,5 +90,28 @@ BEGIN
     CREATE INDEX ix_stop_work_orders_notification_sent
         ON dbo.stop_work_orders (notification_sent)
         WHERE notification_sent = 0;
+END
+
+GO
+
+-- Migrate order tables created by earlier versions. Redundant company-number
+-- columns and the unused Drupal node id are read from dbo.companies or dropped.
+IF OBJECT_ID(N'dbo.stop_work_orders', N'U') IS NOT NULL
+BEGIN
+    IF EXISTS (
+        SELECT 1 FROM sys.check_constraints
+        WHERE name = N'ck_stop_work_orders_number_type'
+          AND parent_object_id = OBJECT_ID(N'dbo.stop_work_orders')
+    )
+        ALTER TABLE dbo.stop_work_orders DROP CONSTRAINT ck_stop_work_orders_number_type;
+
+    IF COL_LENGTH(N'dbo.stop_work_orders', N'company_number') IS NOT NULL
+        ALTER TABLE dbo.stop_work_orders DROP COLUMN company_number;
+
+    IF COL_LENGTH(N'dbo.stop_work_orders', N'company_number_type') IS NOT NULL
+        ALTER TABLE dbo.stop_work_orders DROP COLUMN company_number_type;
+
+    IF COL_LENGTH(N'dbo.stop_work_orders', N'source_nid') IS NOT NULL
+        ALTER TABLE dbo.stop_work_orders DROP COLUMN source_nid;
 END
 GO
