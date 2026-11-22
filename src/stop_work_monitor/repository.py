@@ -46,8 +46,6 @@ class StopWorkOrderRow(Base):
 
     id: Mapped[int] = mapped_column(Integer, primary_key=True)
     company_id: Mapped[int] = mapped_column(ForeignKey("companies.id"))
-    company_number: Mapped[str | None] = mapped_column(String(50))
-    company_number_type: Mapped[str] = mapped_column(String(20))
     site_address: Mapped[str] = mapped_column(String(500))
     order_title: Mapped[str] = mapped_column(String(500))
     source_url: Mapped[str] = mapped_column(String(1000))
@@ -92,8 +90,6 @@ class OrderRepository:
                 _refresh_company(company, order)
             row = StopWorkOrderRow(
                 company_id=company.id,
-                company_number=order.company_number,
-                company_number_type=order.company_number_type,
                 site_address=order.site_address[:500],
                 order_title=order.order_title[:500],
                 source_url=order.source_url[:1000],
@@ -123,9 +119,9 @@ class OrderRepository:
             )
             return StoredOrder(
                 order_id=row.id,
-                company_name=order.company_name,
-                company_number=order.company_number,
-                company_number_type=order.company_number_type,
+                company_name=company.company_name,
+                company_number=company.company_number,
+                company_number_type=company.company_number_type,
                 order_added_on=order.order_added_on,
                 site_address=order.site_address,
                 source_url=order.source_url,
@@ -134,7 +130,12 @@ class OrderRepository:
     def pending_notifications(self) -> list[StoredOrder]:
         with Session(self._engine) as session:
             rows = session.execute(
-                select(StopWorkOrderRow, CompanyRow.company_name)
+                select(
+                    StopWorkOrderRow,
+                    CompanyRow.company_name,
+                    CompanyRow.company_number,
+                    CompanyRow.company_number_type,
+                )
                 .join(CompanyRow, CompanyRow.id == StopWorkOrderRow.company_id)
                 # .is_(False) renders as "IS 0", which SQL Server rejects.
                 .where(StopWorkOrderRow.notification_sent == False)  # noqa: E712
@@ -144,13 +145,13 @@ class OrderRepository:
                 StoredOrder(
                     order_id=order.id,
                     company_name=company_name,
-                    company_number=order.company_number,
-                    company_number_type=order.company_number_type,
+                    company_number=company_number,
+                    company_number_type=company_number_type,
                     order_added_on=order.order_added_on,
                     site_address=order.site_address,
                     source_url=order.source_url,
                 )
-                for order, company_name in rows
+                for order, company_name, company_number, company_number_type in rows
             ]
 
     def mark_notified(self, order_id: int, error: str | None) -> None:
@@ -182,11 +183,8 @@ def _enrich_existing(session: Session, existing: StopWorkOrderRow, order: Parsed
     company = session.get(CompanyRow, existing.company_id)
     if company is None:
         return
-    if order.company_number and not existing.company_number:
-        existing.company_number = order.company_number
-        existing.company_number_type = order.company_number_type
+    if order.company_number and not company.company_number:
         company = _claim_company_number(session, company, order)
-        existing.company_id = company.id
     _refresh_company(company, order)
 
 

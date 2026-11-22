@@ -53,10 +53,6 @@ BEGIN
     CREATE TABLE dbo.stop_work_orders (
         id INT IDENTITY(1, 1) NOT NULL,
         company_id INT NOT NULL,
-        -- Licence number or nine-digit ACN, as indicated by company_number_type.
-        company_number NVARCHAR(50) NULL,
-        -- Type of company_number: licence, acn, or unstated.
-        company_number_type NVARCHAR(20) NOT NULL,
         -- Development / site address the order applies to.
         site_address NVARCHAR(500) NOT NULL,
         order_title NVARCHAR(500) NOT NULL,
@@ -80,9 +76,7 @@ BEGIN
             FOREIGN KEY (company_id) REFERENCES dbo.companies (id),
         CONSTRAINT uq_stop_work_orders_source_url_hash UNIQUE (source_url_hash),
         CONSTRAINT uq_stop_work_orders_dedup_key UNIQUE (dedup_key),
-        CONSTRAINT uq_stop_work_orders_site_key UNIQUE (site_key),
-        CONSTRAINT ck_stop_work_orders_number_type
-            CHECK (company_number_type IN (N'licence', N'acn', N'unstated'))
+        CONSTRAINT uq_stop_work_orders_site_key UNIQUE (site_key)
     );
 END
 GO

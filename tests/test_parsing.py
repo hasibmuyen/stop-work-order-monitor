@@ -191,9 +191,12 @@ def test_schema_script_creates_the_required_columns() -> None:
     company_table = script.split("CREATE TABLE dbo.companies", 1)[1].split("\n    );", 1)[0]
     order_table = script.split("CREATE TABLE dbo.stop_work_orders", 1)[1].split("\n    );", 1)[0]
     assert "company_number NVARCHAR(50) NULL" in company_table
-    assert "company_number NVARCHAR(50) NULL" in order_table
+    assert "company_number" not in order_table
+    assert "company_number_type" not in order_table
     assert "license_number NVARCHAR" not in company_table
     assert "license_number NVARCHAR" not in order_table
+    assert "DROP COLUMN company_number" in script
+    assert "DROP COLUMN company_number_type" in script
     assert "company_number_type" in script
     assert "ck_companies_number_type" in script
     assert "company_address" in script

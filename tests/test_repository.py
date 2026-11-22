@@ -78,6 +78,8 @@ def test_save_new_order_persists_company_and_order(repository_engine: Engine) ->
     assert order.company_id == company.id
     assert order.notification_sent is False
     assert order.order_added_on == date(2026, 1, 10)
+    assert "company_number" not in StopWorkOrderRow.__table__.columns
+    assert "company_number_type" not in StopWorkOrderRow.__table__.columns
 
 
 def test_save_duplicate_order_does_not_add_another_row(repository_engine: Engine) -> None:
@@ -170,5 +172,9 @@ def test_existing_order_is_enriched_with_later_company_number(
     assert len(orders) == 1
     assert companies[0].company_number == "601533519"
     assert companies[0].company_number_type == "acn"
-    assert orders[0].company_number == "601533519"
-    assert orders[0].company_number_type == "acn"
+    assert not hasattr(orders[0], "company_number")
+    assert not hasattr(orders[0], "company_number_type")
+    pending = repository.pending_notifications()
+    assert len(pending) == 1
+    assert pending[0].company_number == "601533519"
+    assert pending[0].company_number_type == "acn"
